@@ -1,0 +1,16 @@
+server:
+  host: 127.0.0.1
+  port: 9000
+
+sensors:
+  - id: temp-01
+    type: temperature
+    interval_seconds: 5
+
+  - id: humidity-01
+    type: humidity
+    interval_seconds: 3
+
+  - id: soil-01
+    type: soil_moisture
+    interval_seconds: 7

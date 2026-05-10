@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>IoT Telemetry Dashboard</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .card {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <h1>Live Greenhouse Telemetry</h1>
+
+    <div id="feed"></div>
+
+    <script>
+
+        const feed = document.getElementById("feed");
+
+        // Connect to WebSocket server
+        const ws = new WebSocket("ws://127.0.0.1:8765");
+
+        ws.onopen = () => {
+
+            console.log("Connected to WebSocket");
+
+            // Optional subscription
+            ws.send(JSON.stringify({
+                action: "subscribe",
+                sensors: [
+                    "temp-01",
+                    "humidity-01",
+                    "soil-01"
+                ]
+            }));
+        };
+
+        ws.onmessage = (event) => {
+
+            const data = JSON.parse(event.data);
+
+            const card = document.createElement("div");
+
+            card.className = "card";
+
+            card.innerHTML = `
+                <strong>Sensor:</strong> ${data.sensor_id}<br>
+                <strong>Type:</strong> ${data.type}<br>
+                <strong>Value:</strong> ${data.value}<br>
+                <strong>Timestamp:</strong> ${data.timestamp}
+            `;
+
+            feed.prepend(card);
+        };
+
+        ws.onerror = (error) => {
+
+            console.log("WebSocket error:", error);
+        };
+
+        ws.onclose = () => {
+
+            console.log("WebSocket disconnected");
+        };
+
+    </script>
+
+</body>
+
+</html>
